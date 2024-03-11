@@ -195,33 +195,41 @@ const planetData =
         }
     ];
       
-    
+
       
       document.addEventListener('DOMContentLoaded', function () {
         const planetSections = document.querySelectorAll('.planet');
         const navToggle = document.querySelector('.nav-toggle');
         const navMenu = document.querySelector('nav ul');
+        const navLinks = document.querySelectorAll('nav ul li a');
       
         navToggle.addEventListener('click', function () {
           navMenu.classList.toggle('show');
         });
       
-        planetSections.forEach((section) => {
-          const planetName = section.querySelector('h2').textContent.toLowerCase();
-          const planet = planetData.find((p) => p.name.toLowerCase() === planetName);
+        function showPlanetSection(planetName, tab = 'overview') {
+          planetSections.forEach(section => {
+            section.style.display = 'none';
+          });
       
+          const planet = planetData.find(p => p.name.toLowerCase() === planetName.toLowerCase());
           if (planet) {
-            const overviewContent = section.querySelector('.overview-content');
-            const overviewSource = section.querySelector('#overview .source');
-            const structureContent = section.querySelector('.structure-content');
-            const structureSource = section.querySelector('#structure .source');
-            const geologyContent = section.querySelector('.geology-content');
-            const geologySource = section.querySelector('#geology .source');
-            const rotation = section.querySelector('.rotation');
-            const revolution = section.querySelector('.revolution');
-            const radius = section.querySelector('.radius');
-            const temperature = section.querySelector('.temperature');
-            const planetImg = section.querySelectorAll('.planet-img');
+            const planetSection = document.querySelector(`#${planetName.toLowerCase()}`);
+            planetSection.style.display = 'block';
+      
+            const overviewContent = planetSection.querySelector('.overview-content');
+            const overviewSource = planetSection.querySelector('#overview .source');
+            const structureContent = planetSection.querySelector('.structure-content');
+            const structureSource = planetSection.querySelector('#structure .source');
+            const geologyContent = planetSection.querySelector('.geology-content');
+            const geologySource = planetSection.querySelector('#geology .source');
+            const rotation = planetSection.querySelector('.rotation');
+            const revolution = planetSection.querySelector('.revolution');
+            const radius = planetSection.querySelector('.radius');
+            const temperature = planetSection.querySelector('.temperature');
+            const planetImg = planetSection.querySelectorAll('.planet-img');
+            const tabBtns = planetSection.querySelectorAll('.tab-btn');
+            const tabContents = planetSection.querySelectorAll('.tab');
       
             overviewContent.textContent = planet.overview.content;
             overviewSource.innerHTML = `Source: <a href="${planet.overview.source}" target="_blank">Wikipedia</a>`;
@@ -237,34 +245,47 @@ const planetData =
             planetImg.forEach((img, i) => {
               switch (i) {
                 case 0:
-                  img.src = planet.images.planet;
+                  img.src = planet.images[tab] || planet.images.planet;
                   break;
                 case 1:
-                  img.src = planet.images.internal;
+                  img.src = planet.images[tab] || planet.images.internal;
                   break;
                 case 2:
-                  img.src = planet.images.geology;
+                  img.src = planet.images[tab] || planet.images.geology;
                   break;
                 default:
                   break;
               }
             });
+      
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+      
+            const selectedTabBtn = planetSection.querySelector(`.tab-btn[data-tab="${tab}"]`);
+            selectedTabBtn.classList.add('active');
+      
+            const selectedTabContent = planetSection.querySelector(`#${tab}`);
+            selectedTabContent.classList.add('active');
           }
+        }
+      
+        navLinks.forEach(link => {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const planetName = link.textContent;
+            showPlanetSection(planetName);
+          });
         });
       
+        showPlanetSection('Earth', 'overview');
+        
         const tabBtns = document.querySelectorAll('.tab-btn');
-        const tabContents = document.querySelectorAll('.tab');
-      
-        tabBtns.forEach((btn) => {
-          btn.addEventListener('click', function () {
-            const tabId = this.dataset.tab;
-            const planetSection = this.closest('.planet'); // Get the parent planet section
-      
-            tabBtns.forEach((btn) => btn.classList.remove('active'));
-            tabContents.forEach((content) => content.classList.remove('active'));
-      
-            this.classList.add('active');
-            planetSection.querySelector(`#${tabId}`).classList.add('active');
+        tabBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const planetSection = btn.closest('.planet');
+            const planetName = planetSection.querySelector('h2').textContent;
+            const tab = btn.dataset.tab;
+            showPlanetSection(planetName, tab);
           });
         });
       });
