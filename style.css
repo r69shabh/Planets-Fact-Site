@@ -55,6 +55,13 @@ nav ul li a:hover {
   opacity: 1;
 }
 
+nav ul li a:hover {
+  background-color: var(--accent-color);
+  opacity: 1;
+  color: var(--primary-color); 
+}
+
+
 main {
   max-width: 1200px;
   margin: 2rem auto;
@@ -88,6 +95,10 @@ main {
   background-color: var(--secondary-color);
 }
 
+.tab-btn:hover {
+  background-color: var(--accent-color);
+}
+
 .tab-content {
   text-align: center;
 }
@@ -98,6 +109,10 @@ main {
 
 .tab.active {
   display: block;
+}
+
+.planet {
+  display: none;
 }
 
 .planet-img {
